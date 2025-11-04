@@ -2,6 +2,7 @@ import { db } from './guitarras.js'
 
 const divContainer = document.querySelector('main div')
 const carritoContainer = document.querySelector('#carrito')
+const buttonVai = document.querySelector('#button-vai')
 
 let carrito = []
 
@@ -84,6 +85,19 @@ db.forEach(guitar => {
     divContainer.appendChild(createDiv(guitar))
 })
 
+const obtieneCarrito = () => {
+    const carritoStorage = localStorage.getItem('carrito')
+    if(carritoStorage){
+        carrito = JSON.parse(carritoStorage)
+    } else {
+        carrito = []
+    }
+}
+
+const guardaCarrito = () => {
+    localStorage.setItem('carrito', JSON.stringify(carrito))
+}
+
 const carritoClicked = (e) => {
     if(e.target.classList.contains('btn')){
         const btn = e.target.innerText
@@ -105,6 +119,7 @@ const carritoClicked = (e) => {
         } else if(btn === 'VACIAR CARRITO'){
             carrito = []
         }
+        guardaCarrito()
         createCart(carrito)
     }
 }
@@ -123,13 +138,18 @@ const cardClicked = (e) => {
                 cantidad: 1
             })    
         } else {
-            carrito[idxGuitar].cantidad++
+            if(carrito[idxGuitar].cantidad < 10){
+                carrito[idxGuitar].cantidad++
+            }
         }
+        guardaCarrito()
         createCart(carrito)
     }
 }
 
+obtieneCarrito()
 createCart(carrito)
 
 divContainer.addEventListener('click', cardClicked)
 carritoContainer.addEventListener('click', carritoClicked)
+buttonVai.addEventListener('click', cardClicked)
